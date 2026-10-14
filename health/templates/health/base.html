@@ -1,0 +1,39 @@
+{% load static %}
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#f3f5ef">
+  <title>{% block title %}SwasthAI{% endblock %} | SwasthAI</title>
+  <link rel="stylesheet" href="{% static 'health/css/app.css' %}">
+</head>
+<body>
+  {% if user.is_authenticated %}
+  <div class="app-shell">
+    <aside class="sidebar">
+      <a class="brand" href="{% url 'dashboard' %}"><span class="brand-mark">S</span><span>SwasthAI<small>YOUR HEALTH, IN CONTEXT</small></span></a>
+      <div class="side-label">WORKSPACE</div>
+      <nav class="side-nav" aria-label="Main navigation">
+        <a class="{% if request.resolver_match.url_name == 'dashboard' %}active{% endif %}" href="{% url 'dashboard' %}"><span class="nav-line"></span>Overview</a>
+        <a class="{% if request.resolver_match.url_name == 'assessment' %}active{% endif %}" href="{% url 'assessment' %}"><span class="nav-line"></span>Health profile</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="privacy-note"><span class="privacy-dot"></span><span>Your data stays in this local app.</span></div>
+        <div class="user-row"><span class="avatar">{{ user.username|first|upper }}</span><span class="user-name">{{ user.username }}<small>PERSONAL PROFILE</small></span>
+          <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="text-button" type="submit" aria-label="Sign out" title="Sign out">↗</button></form>
+        </div>
+      </div>
+    </aside>
+    <main class="main-content">
+      <header class="topbar"><span class="eyebrow">PERSONAL HEALTH JOURNAL</span><span class="top-date">{{ today|date:'l, F j' }}</span></header>
+      {% for message in messages %}<div class="message">{{ message }}</div>{% endfor %}
+      {% block content %}{% endblock %}
+      <footer class="medical-disclaimer">SwasthAI is an educational wellness tool, not a medical device. Estimates are not a diagnosis or a substitute for professional medical advice.</footer>
+    </main>
+  </div>
+  {% else %}
+    {% block auth_content %}{% endblock %}
+  {% endif %}
+</body>
+</html>

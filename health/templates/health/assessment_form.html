@@ -1,0 +1,17 @@
+{% extends 'health/base.html' %}
+{% block title %}Health profile{% endblock %}
+{% block content %}
+<section class="page-heading"><div><span class="eyebrow">YOUR BASELINE</span><h1>Health profile</h1><p>Tell us about the factors that shape your everyday health.</p></div><a class="quiet-link" href="{% url 'dashboard' %}">Back to overview <span>↗</span></a></section>
+<div class="form-intro"><strong>About this assessment</strong><p>Your answers generate separate educational estimates for conditions represented in the survey datasets. These describe survey patterns, not future disease onset or a medical diagnosis.</p></div>
+<form method="post" class="assessment-form">{% csrf_token %}
+  {% for field in form %}
+    <div class="profile-field {% if field.field.widget.input_type == 'checkbox' %}check-field{% endif %}">
+      {% if field.field.widget.input_type == 'checkbox' %}<label class="check-label" for="{{ field.id_for_label }}">{{ field }}<span>{{ field.label }}</span></label>
+      {% else %}<label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% endif %}
+      {% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}
+    </div>
+  {% endfor %}
+  {% for error in form.non_field_errors %}<div class="form-errors">{{ error }}</div>{% endfor %}
+  <div class="form-actions"><span>All fields are stored in your local app database.</span><button class="button button-dark" type="submit">Save and view estimate <span>→</span></button></div>
+</form>
+{% endblock %}

@@ -1,0 +1,45 @@
+{% extends 'health/base.html' %}
+{% block title %}Overview{% endblock %}
+{% block content %}
+<section class="page-heading dashboard-heading"><div><span class="eyebrow">MONDAY MOMENT, ANY DAY</span><h1>Good to see you, {{ user.username }}.</h1><p>A clearer view of your health starts with the small things.</p></div><a class="button button-outline" href="{% url 'assessment' %}">{% if assessment %}Update profile{% else %}Start your profile{% endif %}<span>↗</span></a></section>
+{% if not assessment %}
+  <section class="empty-state"><div class="empty-index">01</div><div><span class="eyebrow">YOUR FIRST CHECK-IN</span><h2>Start with your health picture.</h2><p>Share a few health and lifestyle details to see estimates for the conditions represented in the survey data.</p><a class="button button-dark" href="{% url 'assessment' %}">Begin check-in <span>→</span></a></div><div class="empty-stamp">A FRESH<br>START</div></section>
+{% else %}
+  <section class="condition-section">
+    <div class="condition-heading"><div><span class="eyebrow">MODEL PREDICTIONS</span><h2>Condition estimates</h2><p>Individual model scores from the health profile you provided.</p></div><span class="condition-total">{{ disease_predictions|length|stringformat:'02d' }} CONDITIONS</span></div>
+    {% if disease_predictions %}
+      <div class="condition-grid">
+        {% for prediction in disease_predictions %}
+          <article class="condition-card">
+            <div class="condition-card-top"><span class="condition-kind">SURVEY MODEL</span><span class="status-pill status-{{ prediction.risk_level }}"><i></i>{{ prediction.risk_level|capfirst }}</span></div>
+            <h3>{{ prediction.label }}</h3>
+            <div class="condition-result"><strong>{{ prediction.probability_pct|floatformat:1 }}%</strong><span>model score</span></div>
+            <div class="condition-track"><span class="level-{{ prediction.risk_level }}" style="width: {{ prediction.probability_pct }}%"></span></div>
+          </article>
+        {% endfor %}
+      </div>
+      <div class="method-note"><span class="method-mark">i</span><p>Each score estimates how closely your profile matches survey respondents who reported having or having had the condition. It does not predict future onset; scores are not calibrated probabilities, diagnoses, or a substitute for a healthcare professional.</p></div>
+    {% else %}
+      <div class="no-model-state"><strong>Disease models are not available.</strong><p>Train the uploaded datasets to generate estimates for each condition.</p></div>
+    {% endif %}
+  </section>
+  <section class="profile-overview">
+    <article class="profile-panel"><div class="panel-top"><span class="eyebrow">PROFILE AT A GLANCE</span><a class="tiny-link" href="{% url 'assessment' %}">EDIT <span>↗</span></a></div>
+      <div class="profile-stat"><span>Age</span><strong>{{ profile.age }} <small>years</small></strong></div>
+      <div class="profile-stat"><span>Body mass index</span><strong>{{ profile.bmi|floatformat:1 }}</strong></div>
+      <div class="profile-stat"><span>Weekly movement</span><strong>{% if profile.physical_activity %}Active{% else %}Low{% endif %}</strong></div>
+      <div class="profile-stat"><span>Sleep average</span><strong>{{ profile.sleep_hours|floatformat:1 }} <small>hrs</small></strong></div>
+      <div class="profile-updated">Profile refreshed {{ profile.updated_at|date:'M j' }}</div>
+    </article>
+  </section>
+  <section class="lower-grid">
+    <article class="recommend-panel"><div class="section-heading"><div><span class="eyebrow">A FEW IDEAS FOR YOU</span><h2>Personal next steps</h2></div><span class="rec-count">{{ recommendations|length|stringformat:'02d' }} SUGGESTIONS</span></div>
+      <div class="recommend-list">{% for title, detail, category in recommendations %}<div class="recommend-item"><span class="rec-marker"></span><div class="rec-copy"><span class="rec-category">{{ category }}</span><h3>{{ title }}</h3><p>{{ detail }}</p></div><span class="rec-number">0{{ forloop.counter }}</span></div>{% endfor %}</div>
+    </article>
+    <article class="history-panel"><div class="section-heading"><div><span class="eyebrow">OVER TIME</span><h2>Check-in history</h2></div><span class="history-period">LAST 6</span></div>
+      <div class="history-list">{% for item in history %}<div class="history-row"><span class="history-date">{{ item.created_at|date:'M j' }}</span><div class="history-track"><span class="history-fill level-{{ item.risk_level }}" style="width: {{ item.risk_score }}%"></span></div><strong>{{ item.risk_score }}</strong></div>{% empty %}<p class="muted">Your check-ins will appear here.</p>{% endfor %}</div>
+      <div class="history-legend"><span><i class="legend-low"></i>Lower</span><span><i class="legend-high"></i>Higher</span></div>
+    </article>
+  </section>
+{% endif %}
+{% endblock %}

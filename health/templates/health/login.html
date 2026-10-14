@@ -1,0 +1,17 @@
+{% extends 'health/base.html' %}
+{% block title %}Sign in{% endblock %}
+{% block auth_content %}
+<main class="auth-layout">
+  <section class="auth-story"><a class="brand" href="{% url 'login' %}"><span class="brand-mark">S</span><span>SwasthAI<small>YOUR HEALTH, IN CONTEXT</small></span></a>
+    <div class="story-copy"><span class="eyebrow">A MORE PERSONAL KIND OF PREVENTION</span><h1>Small steps.<br><em>Clearer direction.</em></h1><p>Bring your everyday health picture together and find one useful next step at a time.</p></div>
+    <div class="story-foot"><span>BUILT AROUND YOUR WHOLE PICTURE</span><span>01 / 03</span></div>
+  </section>
+  <section class="auth-panel"><div class="auth-form-wrap"><span class="eyebrow">WELCOME BACK</span><h2>Sign in to your space</h2><p class="muted">Your health profile is right where you left it.</p>
+    <form method="post" class="stack-form">{% csrf_token %}
+      {% for field in form %}<div class="field"><label for="{{ field.id_for_label }}">{{ field.label }}</label>{{ field }}{% for error in field.errors %}<span class="field-error">{{ error }}</span>{% endfor %}</div>{% endfor %}
+      {% for error in form.non_field_errors %}<div class="form-errors">{{ error }}</div>{% endfor %}
+      <button class="button button-dark" type="submit">Continue <span>→</span></button>
+    </form><p class="auth-switch">New to SwasthAI? <a href="{% url 'signup' %}">Create an account</a></p>
+  </div></section>
+</main>
+{% endblock %}
