@@ -19,7 +19,7 @@
         <a class="{% if request.resolver_match.url_name == 'assessment' %}active{% endif %}" href="{% url 'assessment' %}"><span class="nav-line"></span>Health profile</a>
       </nav>
       <div class="sidebar-bottom">
-        <div class="privacy-note"><span class="privacy-dot"></span><span>Your data stays in this local app.</span></div>
+        <div class="privacy-note"><span class="privacy-dot"></span><span>Your data stays in your account.</span></div>
         <div class="user-row"><span class="avatar">{{ user.username|first|upper }}</span><span class="user-name">{{ user.username }}<small>PERSONAL PROFILE</small></span>
           <form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="text-button" type="submit" aria-label="Sign out" title="Sign out">↗</button></form>
         </div>

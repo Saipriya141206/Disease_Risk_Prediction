@@ -86,9 +86,22 @@ Open `http://127.0.0.1:8000/`, create an account, and complete the profile. The 
 python manage.py test
 ```
 
+## Deploying on Render
+
+The root `render.yaml` defines a Django web service and a PostgreSQL database. To deploy:
+
+1. Commit and push the project to the `main` branch on GitHub.
+2. In the [Render Dashboard](https://dashboard.render.com/), choose **New +** → **Blueprint** and connect this repository.
+3. Review the services and select **Apply**. Render will install the requirements, collect static files, apply database migrations, and start Django with Gunicorn.
+4. Open the web service URL shown in Render after the deploy succeeds.
+
+The Blueprint generates `DJANGO_SECRET_KEY` and disables debug mode. Render's `RENDER_EXTERNAL_HOSTNAME` is used for the deployed host and HTTPS CSRF origin. If you add a custom domain, set `DJANGO_ALLOWED_HOSTS` to include it and `DJANGO_CSRF_TRUSTED_ORIGINS` to its `https://` origin in the service's environment.
+
+The deployed app stores account and assessment data in the connected PostgreSQL database. The `data/` and `models/` directories are excluded from Git, so the deployed copy does not include the local trained-model artifact and uses the documented screening fallback instead. This remains an educational prototype; do not enter real patient data or treat estimates as medical advice. Render's free services and databases have plan-specific limits, so review their current availability and persistence terms before relying on them.
+
 ## Data, privacy, and safety
 
-The development setup stores user accounts, profile details, and assessment history in local SQLite. Do not use real patient data or deploy this prototype without security, privacy, and clinical review. Before production deployment, configure a secret `DJANGO_SECRET_KEY` and appropriate `DJANGO_ALLOWED_HOSTS`, disable debug mode, use HTTPS, and add suitable access controls, encryption, retention policies, and operational safeguards.
+The development setup stores user accounts, profile details, and assessment history in local SQLite. Do not enter real patient data or use this prototype for clinical decisions. Before any real-world deployment, conduct security, privacy, and clinical review; configure a secret `DJANGO_SECRET_KEY` and appropriate `DJANGO_ALLOWED_HOSTS`; disable debug mode; use HTTPS; and add suitable access controls, encryption, retention policies, and operational safeguards.
 
 The training inputs are based on CDC Behavioral Risk Factor Surveillance System (BRFSS) data and the 2020 Personal Key Indicators of Heart Disease dataset. Confirm dataset provenance, terms of use, licensing, and feature compatibility before collecting, redistributing, or retraining with data. The project also contains `2015_formats.json`, which documents source-specific formats.
 
